@@ -1,0 +1,176 @@
+<?php
+// Start the session if you need to use session variables
+session_start();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--=============== REMIXICONS ===============-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="styles(1).css"> <!-- Use relative path instead of absolute -->
+
+    <title>Responsive login and registration form</title>
+</head>
+<body>
+    <!--=============== LOGIN IMAGE ===============-->
+    <svg class="login__blob" viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg">
+        <mask id="mask0" mask-type="alpha">
+            <path d="M442.407 150.6315C498.53 120.4007 514.378 40.3643 511.538 0H800V1000H0C14.5385 994.991 140.266 840.436 117.2046 727.263C69.6393 591.11 175.306 518.927 236.468 488.873C453.385 397.026 256.98 302.824 277.945 179.32C283.46 117.209 404.755 120.1699 442.407 150.6315Z" fill="hsl(208, 92%, 54%)"/>
+        </mask>
+
+        <g mask="url(#mask0)">
+            <path d="M442.407 150.6315C498.53 120.4007 514.378 40.3643 511.538 0H800V1000H0C14.5385 994.991 140.266 840.436 117.2046 727.263C69.6393 591.11 175.306 518.927 236.468 488.873C453.385 397.026 256.98 302.824 277.945 179.32C283.46 117.209 404.755 120.1699 442.407 150.6315Z" fill="hsl(208, 92%, 54%)"/>
+
+            <!-- تكبير حجم الصورة -->
+            <image href="name.jpg" x="300" y="30" width="500" height="1100"/> <!-- Adjust paths accordingly -->
+        </g>
+    </svg>
+
+    <!--=============== LOGIN ===============-->
+    <div class="login container grid" id="loginAccessRegister">
+        <!--===== LOGIN ACCESS =====-->
+        <div class="login__access">
+            <h1 class="login__title">Log in to your account</h1>
+
+            <div class="login__area">
+                <form action="login_logic.php" class="login__form" method="POST">
+                    <div class="login__content grid">
+                        <div class="login__box">
+                            <input type="email" id="emailCreate" name="email" required placeholder=" " class="login__input">
+                            <label for="email" class="login__label">Email</label>
+                            <i class="ri-mail-fill login__icon"></i>
+                        </div>
+
+                        <div class="login__box">
+                            <input type="password" id="password" name="password" required placeholder=" " class="login__input">
+                            <label for="password" class="login__label">Password</label>
+                            <i class="ri-eye-off-fill login__icon login__password" id="loginPassword"></i>
+                        </div>
+                    </div>
+
+                    <a href="#" class="login__forgot">Forgot your password?</a>
+
+                    <button type="submit" class="login__button">Login</button>
+                </form>
+
+                <p class="login__switch">
+                    Don't have an account? 
+                    <button type="button" id="loginButtonRegister" onclick="toggleForms()">Create Account</button>
+                </p>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!--===== LOGIN REGISTER =====-->
+        <div class="login__register hidden"> <!-- Added 'hidden' class for toggle functionality -->
+            <h1 class="login__title">Create new account</h1>
+
+            <div class="login__area">
+                <form action="register_logic.php" method="POST" name="signup" enctype="multipart/form-data" class="login__form" >
+                    <div class="login__content grid">
+                        <div class="login__group grid">
+                            <div class="login__box">
+
+                                <input type="text" id="names" name="username" required placeholder=" " class="login__input">
+                                <label for="names" class="login__label">Name</label>
+                                <i class="ri-id-card-fill login__icon"></i>
+
+                            </div>
+
+                            <div class="login__box">
+                                <input type="text" id="surnames" name="surnames" required placeholder=" " class="login__input">
+                                <label for="surnames" class="login__label">Surnames</label>
+                                <i class="ri-id-card-fill login__icon"></i>
+                            </div>
+                        </div>
+                            <div class="login__box">
+                                
+                                <input type="number" id="age" name="age" required placeholder=" " class="login__input">
+                                    <label for="age" class="login__label">Age</label>
+                                    
+                                     
+                                
+                            </div>
+                            <div class="login__box">
+                                <input type="text" name="phone" id="phone" class="login__input" required placeholder=" ">
+                                <label for="phone" class="login__label">Phone</label>
+                            </div>
+                            <div class="login__box">
+                                <input type="email" id="emailCreate" name="email" required placeholder=" " class="login__input">
+                                <label for="emailCreate" class="login__label">Email</label>
+           
+                                <i class="ri-mail-fill login__icon"></i>
+                             </div>
+                            
+                            <div class="login__box">
+                                <!-- <label for="country" class="login__label">Country</label> -->
+                                <select name="country" id="country" class="login__input" required>
+                                    <option  value=""><b style="font-size: larger;">Select your country</b></option>
+                                    <option value="US">United States</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="eg">Egypt</option>
+                                    <!-- Add more countries as needed -->
+                                </select>
+                            </div>
+                            
+                        
+
+                        <div class="login__box">
+                            <input type="password" id="passwordCreate" name="password" required placeholder=" " class="login__input">
+                            <label for="passwordCreate" class="login__label">Password</label>
+                            <i class="ri-eye-off-fill login__icon login__password" id="loginPasswordCreate"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit"  name="signup" class="login__button">Create account</button>
+                </form>
+
+                <p class="login__switch">
+                    Already have an account? 
+                    <button id="loginButtonAccess" onclick="toggleForms()">Log In</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+    <!--=============== MAIN JS ===============-->
+    <script src="main.js"></script> <!-- Use relative path instead of absolute -->
+    <script>
+        function toggleForms() {
+            const loginAccess = document.querySelector('.login__access');
+            const loginRegister = document.querySelector('.login__register');
+
+            // Toggle visibility
+            loginAccess.classList.toggle('hidden');
+            loginRegister.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
