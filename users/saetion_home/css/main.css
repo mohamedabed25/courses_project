@@ -101,6 +101,9 @@ body{
 .img img{
     margin-top: 100px;
     width: 650px;
+    color: #0d83fd;
+    
+    
 }
 .btn:hover i {
     color: #0d83fd;
@@ -113,6 +116,8 @@ body{
     width: 30px;
     margin: 0px 0px 0px -8px;
     border-radius: 50px;
+    
+ 
 }
 
 
