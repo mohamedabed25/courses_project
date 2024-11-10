@@ -1,14 +1,14 @@
 <?php
 include 'connect.php'; // Make sure this is included
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {   # check if the request method is POST to prevent any conflections 
     // Ensure the session is started
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
 
     // Retrieve form data
-    $email = trim($_POST['email']);
+    $email = trim($_POST['email']); # trim function for removing whitespace
     $password = trim($_POST['password']);
 
     // Check if $pdo is defined

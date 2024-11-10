@@ -1,0 +1,118 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    /* height: 5000px; */
+    font-family: "Nunito", sans-serif;
+    ;
+}
+#bg-color{
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    background-color: #99c3ef;
+    opacity: .2;
+    transform: skewY(-25deg);
+    top: -50%;
+    left: 0;
+    z-index: -1;
+}
+.navbar{
+    margin-top: 20px;
+    padding: 15px 0;
+    border-radius: 50px;
+}
+.navbar-brand{
+    margin-left: 25px;
+    font-size: 24px;
+    color: #2d465e;
+}
+.nav-item a{
+    color: black;
+    margin-left: 5px;
+    font-size: 17px;
+}
+.nav-item:hover a{
+    color:#0d83fd;
+}
+ .btn {
+    border-radius: 50px;
+    margin-right: 15px;
+    width: 115px;
+}
+.caption{
+    margin-top: 120px;
+}
+.caption_setting{
+    background-color: #d3e5f8;
+    width: 250px;
+    border-radius: 50px;
+    padding: 10px;
+}
+.icon i{
+    margin-right: 10px;
+    font-size: 20px;
+}
+.text_setting {
+    font-weight: 500;
+}
+.address h1{
+    font-size: 3.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+    width: 450px;
+    margin-top: 25px;
+    color:  #2d465e;
+}
+.Pragraph p{
+    width: 680px;
+    line-height: 23px;
+    color: black;
+    font-size: 17px;
+    margin-top: 20px;
+}
+.buttons{
+    margin-top: 40px;
+}
+.buttons button{
+    width: 160px;
+    padding: 15px;
+}
+.icon_play i{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 6px;
+    padding-left: 9px;
+    padding-top: 7px;
+    border: 1px solid rgb(0, 0, 0);
+}
+.text_button a{
+    text-decoration: none;
+    margin-left: 10px;
+    color: black;
+    margin-top: 4px;
+}
+.text_button a:hover{
+    color: #0d83fd;
+}
+.img img{
+    margin-top: 100px;
+    width: 650px;
+}
+.btn:hover i {
+    color: #0d83fd;
+    border: 1px solid #0d83fd;
+}
+.btn:hover p {
+    color: #0d83fd;
+}
+.box img{
+    width: 30px;
+    margin: 0px 0px 0px -8px;
+    border-radius: 50px;
+}
+
+
