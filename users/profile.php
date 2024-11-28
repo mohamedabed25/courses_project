@@ -6,6 +6,24 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.html"); // Redirect to login page if not logged in
     exit;
 }
+
+// Include the database connection (ensure you have your DB connection here)
+require_once 'connect.php';
+
+// Fetch user details and photo from the database
+$stmt = $pdo->prepare("SELECT username, email, age, phone, country, photo FROM users WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$user = $stmt->fetch();
+
+// Check if the user exists in the database
+if ($user) {
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['email'] = $user['email'];
+    $_SESSION['age'] = $user['age'];
+    $_SESSION['phone'] = $user['phone'];
+    $_SESSION['country'] = $user['country'];
+    $_SESSION['photo'] = $user['photo']; // Store photo path in session
+}
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +35,7 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body>
     <h2>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
-    
+
     <!-- Display user profile information -->
     <form method="POST" action="update_profile.php" enctype="multipart/form-data">
         <p><strong>Username:</strong> <input type="text" name="username" value="<?php echo htmlspecialchars($_SESSION['username']); ?>" /></p>
@@ -25,9 +43,9 @@ if (!isset($_SESSION['user_id'])) {
         <p><strong>Email:</strong> <input type="email" name="email" value="<?php echo htmlspecialchars($_SESSION['email'] ?? ''); ?>" /></p>
         <p><strong>Phone:</strong> <input type="tel" name="phone" value="<?php echo htmlspecialchars($_SESSION['phone'] ?? ''); ?>" /></p>
         <p><strong>Country:</strong> <input type="text" name="country" value="<?php echo htmlspecialchars($_SESSION['country'] ?? ''); ?>" /></p>
-        
+
         <!-- File input for photo upload -->
-        <p><strong>Profile Photo:</strong> 
+        <p><strong>Profile Photo:</strong>
             <input type="file" name="photo" accept="image/*" />
             <?php if (!empty($_SESSION['photo'])): ?>
                 <br><img src="<?php echo htmlspecialchars($_SESSION['photo']); ?>" alt="User Photo" style="width: 150px; height: auto;">

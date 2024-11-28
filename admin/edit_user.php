@@ -9,7 +9,7 @@ require 'connect.php';
 
 // Check if the admin is logged in
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: admin_login.php");
+    header("Location: admin_login.html");
     exit();
 }
 

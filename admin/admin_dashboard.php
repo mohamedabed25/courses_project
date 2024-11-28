@@ -3,7 +3,7 @@ session_start();
 
 // Check if the admin is logged in
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
+    header("Location: admin_login.html"); // Redirect to login page if not logged in
     exit();
 }
 ?>
@@ -20,12 +20,19 @@ if (!isset($_SESSION['admin_id'])) {
 
     <!-- Go to Users Button -->
     <form action="users_template.php" method="get">
-        <input type="submit" value="Go to User" />
+        <input type="submit" value="Go to Users" />
     </form>
 
+    <!-- Go to Visa Cards Button -->
     <form action="visa_cards.php" method="get">
-        <input type="submit" value="Go to visas" />
+        <input type="submit" value="Go to Visas" />
     </form>
+
+    <!-- Go to Courses Button -->
+    <form action="courses.php" method="get">
+        <input type="submit" value="Go to Courses" />
+    </form>
+
     <!-- Logout Button -->
     <a href="logout.php">Logout</a>
 </body>

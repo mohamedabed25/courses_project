@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (in_array($fileType, $allowedTypes)) {
             // Define the upload directory and new file name
-            $uploadDir = 'uploads';
+            $uploadDir = 'uploads\\';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true); // Create the directory if it doesn't exist
             }
