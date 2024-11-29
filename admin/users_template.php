@@ -44,26 +44,28 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users</title>
+    <title>Admin Dashboard - Manage Users</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0f7fa; /* Light Blue Background */
             color: #333;
             margin: 0;
             padding: 0;
         }
-        header {
-            background-color: #1e90ff;
-            color: #fff;
-            padding: 1rem;
+        .header {
+            background-color: #0288d1; /* Dark Blue */
+            color: white;
+            padding: 20px;
             text-align: center;
-        }
-        h2, h3 {
-            color: #1e90ff;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 20px auto;
             background: #fff;
             padding: 20px;
@@ -84,7 +86,7 @@ try {
             border-radius: 4px;
         }
         input[type="submit"] {
-            background-color: #1e90ff;
+            background-color: #0288d1;
             color: #fff;
             border: none;
             padding: 10px 15px;
@@ -92,7 +94,7 @@ try {
             cursor: pointer;
         }
         input[type="submit"]:hover {
-            background-color: #4682b4;
+            background-color: #1565c0;
         }
         table {
             width: 100%;
@@ -105,18 +107,18 @@ try {
             text-align: left;
         }
         table th {
-            background-color: #1e90ff;
+            background-color: #0288d1;
             color: white;
         }
         table tr:nth-child(even) {
             background-color: #f9f9f9;
         }
         table tr:hover {
-            background-color: #f1f1f1;
+            background-color: #e1f5fe;
         }
         .actions a {
             margin-right: 10px;
-            color: #1e90ff;
+            color: #0288d1;
             text-decoration: none;
         }
         .actions a:hover {
@@ -128,18 +130,42 @@ try {
             text-align: center;
         }
         .back-link a {
-            color: #1e90ff;
+            color: #0288d1;
             text-decoration: none;
         }
         .back-link a:hover {
             text-decoration: underline;
         }
+
+        .background-shape {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: #0288d1;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        .shape-1 {
+            top: -100px;
+            left: -150px;
+        }
+
+        .shape-2 {
+            bottom: -100px;
+            right: -150px;
+        }
+
     </style>
 </head>
 <body>
-    <header>
-        <h2>Manage Users</h2>
-    </header>
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+
+    <div class="header">
+        Admin Dashboard - Manage Users
+    </div>
     <div class="container">
         <h3>Welcome, <?php echo htmlspecialchars($_SESSION['email']); ?>!</h3>
         <h3>Create New User</h3>

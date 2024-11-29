@@ -5,7 +5,7 @@
 session_start();
 
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: admin_login.html"); // Redirect to login if not logged 
+    header("Location: admin_login.html"); // Redirect to login if not logged in
     exit;
 }
 
@@ -33,7 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':less_than_10', $less_than_10, PDO::PARAM_INT); // Bind less_than_10 as integer
         
         if ($stmt->execute()) {
-            echo "Course added successfully!";
+            // Redirect to courses.php after successful insertion
+            header("Location: courses.php");
+            exit;
         } else {
             echo "Failed to add course.";
         }

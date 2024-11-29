@@ -78,8 +78,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Course</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #ffffff); /* خلفية متدرجة */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            text-align: center;
+            color: #1E90FF; /* لون أزرق فاتح */
+            font-size: 2.5rem;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        input[type="submit"] {
+            background-color: #0288d1;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #026ca0;
+        }
+
+        .background-shape {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: #0288d1;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        .shape-1 {
+            top: -100px;
+            left: -150px;
+        }
+
+        .shape-2 {
+            bottom: -100px;
+            right: -150px;
+        }
+    </style>
 </head>
 <body>
+    <!-- Background Shapes -->
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+
     <h1>Edit Course</h1>
     
     <form method="POST" action="edit_course.php?id=<?php echo $course['id']; ?>">

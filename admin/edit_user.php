@@ -43,19 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
     $password = htmlspecialchars(trim($_POST['password']));
     $wallet = htmlspecialchars(trim($_POST['wallet']));
 
-    // Handle file upload for photo
-    // if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-    //     $photo_tmp = $_FILES['photo']['tmp_name'];
-    //     $photo_name = basename($_FILES['photo']['name']);
-    //     $photo_path = "uploads/" . $photo_name;
-
-    //     // Move the uploaded photo to the uploads folder
-    //     move_uploaded_file($photo_tmp, $photo_path);
-    // } else {
-    //     // Use existing photo if no new one is uploaded
-    //     $photo_path = $user['photo'];
-    // }
-
     // Update user in the database
     try {
         $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, phone = ?, password = ?, wallet = ? WHERE id = ?");
@@ -76,23 +63,145 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit User</title>
+    <style>
+        /* Basic reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Centering the content vertically and horizontally */
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+            background-color: #e0f7fa; /* Light blue background */
+        }
+
+        /* Container for form */
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px; /* Max width for larger screens */
+        }
+
+        h2 {
+            background-color: #00bcd4; /* Light blue background */
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            margin-top: 0;
+            border-radius: 8px 8px 0 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #007bb5; /* Blue border */
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #00bcd4; /* Lighter blue on focus */
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #007bb5; /* Blue button */
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            align-self: center; /* Center the button */
+            margin-top: 20px; /* Add space above the button */
+        }
+
+        input[type="submit"]:hover {
+            background-color: #00bcd4; /* Lighter blue on hover */
+        }
+
+        a {
+            text-align: center;
+            display: block;
+            margin-top: 20px;
+            color: #007bb5;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .input-group input {
+                width: 100%; /* Full width on smaller screens */
+            }
+
+            input[type="submit"] {
+                width: 100%; /* Full width on smaller screens */
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>Edit User: <?php echo htmlspecialchars($user['username']); ?></h2>
-    <form action="edit_user.php?id=<?php echo $user['id']; ?>" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="update_user" value="1">
+    <div class="wrapper">
+        <div class="container">
+            <h2>Edit User: <?php echo htmlspecialchars($user['username']); ?></h2>
+            <form action="edit_user.php?id=<?php echo $user['id']; ?>" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="update_user" value="1">
 
-        <p>Username: <input type="text" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required></p>
-        <p>Email: <input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required></p>
-        <p>Phone: <input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required></p>
-        <p>Password: <input type="password" name="password" value="<?php echo htmlspecialchars($user['password']); ?>" required></p>
+                <div class="input-group">
+                    <p>Username:</p><input type="text" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                </div>
+                
+                <div class="input-group">
+                    <p>Email:</p><input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                </div>
+                
+                <div class="input-group">
+                    <p>Phone:</p><input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
+                </div>
+                
+                <div class="input-group">
+                    <p>Password:</p><input type="password" name="password" value="<?php echo htmlspecialchars($user['password']); ?>" required>
+                </div>
 
-        <p>wallet: <input type="number" name="wallet" value="<?php echo htmlspecialchars($user['wallet']); ?>" required step="0.01"></p>
+                <div class="input-group">
+                    <p>Wallet:</p><input type="number" name="wallet" value="<?php echo htmlspecialchars($user['wallet']); ?>" required step="0.01">
+                </div>
 
+                <p><input type="submit" value="Update User"></p>
+            </form>
 
-        <p><input type="submit" value="Update User"></p>
-    </form>
-
-    <a href="users_template.php">Back to Users</a>
+            <a href="users_template.php">Back to Users</a>
+        </div>
+    </div>
 </body>
 </html>
