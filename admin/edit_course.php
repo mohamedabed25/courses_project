@@ -35,18 +35,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'];
     $instructor_name = $_POST['instructor_name'];
     $less_than_10 = $_POST['less_than_10'];
+    $course_price = $_POST['course_price'];
+    $is_free = $_POST['is_free'];
 
     // Validate input
-    if (empty($title) || empty($description) || empty($instructor_name)) {
+    if (empty($title) || empty($description) || empty($instructor_name) || empty($course_price)) {
         echo "All fields are required.";
     } else {
         // Update course details in the database
-        $update_sql = "UPDATE courses SET title = :title, description = :description, instructor_name = :instructor_name, less_than_10 = :less_than_10, updated_at = NOW() WHERE id = :course_id";
+        $update_sql = "UPDATE courses SET 
+                        title = :title, 
+                        description = :description, 
+                        instructor_name = :instructor_name, 
+                        less_than_10 = :less_than_10, 
+                        course_price = :course_price,
+                        is_free = :is_free,
+                        updated_at = NOW() 
+                        WHERE id = :course_id";
         $update_stmt = $pdo->prepare($update_sql);
         $update_stmt->bindParam(':title', $title);
         $update_stmt->bindParam(':description', $description);
         $update_stmt->bindParam(':instructor_name', $instructor_name);
         $update_stmt->bindParam(':less_than_10', $less_than_10, PDO::PARAM_INT);
+        $update_stmt->bindParam(':course_price', $course_price, PDO::PARAM_STR);
+        $update_stmt->bindParam(':is_free', $is_free, PDO::PARAM_INT);
         $update_stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
 
         if ($update_stmt->execute()) {
@@ -84,6 +96,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <select name="less_than_10" required>
             <option value="0" <?php echo $course['less_than_10'] == 0 ? 'selected' : ''; ?>>No</option>
             <option value="1" <?php echo $course['less_than_10'] == 1 ? 'selected' : ''; ?>>Yes</option>
+        </select><br><br>
+
+        <label for="course_price">Course Price:</label>
+        <input type="number" name="course_price" value="<?php echo htmlspecialchars($course['course_price']); ?>" step="0.01" required><br><br>
+
+        <label for="is_free">Is the course free?</label>
+        <select name="is_free" required>
+            <option value="0" <?php echo $course['is_free'] == 0 ? 'selected' : ''; ?>>No</option>
+            <option value="1" <?php echo $course['is_free'] == 1 ? 'selected' : ''; ?>>Yes</option>
         </select><br><br>
 
         <input type="submit" value="Update Course">
