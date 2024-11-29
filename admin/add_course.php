@@ -5,7 +5,7 @@
 session_start();
 
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: admin_login.html"); // Redirect to login if not logged in
+    header("Location: admin_login.html"); // Redirect to login if not logged 
     exit;
 }
 
