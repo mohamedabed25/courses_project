@@ -51,6 +51,7 @@ if (isset($_GET['delete'])) {
                 <th>Instructor Name</th>
                 <th>Description</th>
                 <th>Age Group (Under 10)</th>
+                <th>is_free</th> <!-- Add is_free column header -->
                 <th>Actions</th>
             </tr>
         </thead>
@@ -61,6 +62,7 @@ if (isset($_GET['delete'])) {
                     <td><?php echo htmlspecialchars($course['instructor_name']); ?></td>
                     <td><?php echo htmlspecialchars($course['description']); ?></td>
                     <td><?php echo $course['less_than_10'] == 1 ? 'Yes' : 'No'; ?></td>
+                    <td><?php echo $course['is_free'] == 1 ? 'Yes' : 'No'; ?></td> <!-- Display is_free status -->
                     <td>
                         <!-- Edit Link -->
                         <a href="edit_course.php?id=<?php echo $course['id']; ?>">Edit</a> | 

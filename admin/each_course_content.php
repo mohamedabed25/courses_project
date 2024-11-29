@@ -15,8 +15,11 @@ if (!isset($_GET['id'])) {
 
 $course_id = $_GET['id']; // Store course ID from URL
 
-// Fetch course content based on course_id
-$sql = "SELECT * FROM course_contents WHERE course_id = :course_id ORDER BY `order` ASC";
+// Fetch course content based on course_id, including created_at, updated_at, order, and content type
+$sql = "SELECT id, title, content_type, content_value, video_file_path, pdf_file_path, url, quiz_id, `order`, created_at, updated_at
+        FROM course_contents
+        WHERE course_id = :course_id
+        ORDER BY `order` ASC";
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':course_id', $course_id);
 $stmt->execute();
@@ -39,6 +42,7 @@ if (empty($course_contents)) {
         .content-item { margin-bottom: 20px; }
         .content-title { font-weight: bold; }
         .content-body { margin-top: 10px; }
+        .content-meta { font-size: 0.9em; color: #777; }
     </style>
 </head>
 <body>
@@ -48,12 +52,19 @@ if (empty($course_contents)) {
 <?php foreach ($course_contents as $content): ?>
     <div class="content-item">
         <div class="content-title"><?php echo htmlspecialchars($content['title']); ?></div>
+
+        <!-- Meta information for created_at, updated_at, and order -->
+        <div class="content-meta">
+            <p>Order: <?php echo $content['order']; ?></p>
+            <p>Created At: <?php echo htmlspecialchars($content['created_at']); ?></p>
+            <p>Updated At: <?php echo htmlspecialchars($content['updated_at']); ?></p>
+        </div>
         
         <div class="content-body">
             <?php 
             switch ($content['content_type']) {
                 case 'text':
-                    echo nl2br(htmlspecialchars($content['content_value']));  // Display text content
+                    echo "<p>Content Value: " . nl2br(htmlspecialchars($content['content_value'])) . "</p>";  // Display text content
                     break;
                 case 'video':
                     echo "<video controls><source src='" . htmlspecialchars($content['video_file_path']) . "' type='video/mp4'>Your browser does not support the video tag.</video>";

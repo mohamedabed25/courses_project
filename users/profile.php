@@ -7,11 +7,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Include the database connection (ensure you have your DB connection here)
+// Include the database connection
 require_once 'connect.php';
 
 // Fetch user details and photo from the database
-$stmt = $pdo->prepare("SELECT username, email, age, phone, country, photo FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT username, email, phone, country, wallet, photo FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch();
 
@@ -19,9 +19,9 @@ $user = $stmt->fetch();
 if ($user) {
     $_SESSION['username'] = $user['username'];
     $_SESSION['email'] = $user['email'];
-    $_SESSION['age'] = $user['age'];
     $_SESSION['phone'] = $user['phone'];
     $_SESSION['country'] = $user['country'];
+    $_SESSION['wallet'] = $user['wallet']; // Store wallet balance in session
     $_SESSION['photo'] = $user['photo']; // Store photo path in session
 }
 ?>
@@ -39,10 +39,9 @@ if ($user) {
     <!-- Display user profile information -->
     <form method="POST" action="update_profile.php" enctype="multipart/form-data">
         <p><strong>Username:</strong> <input type="text" name="username" value="<?php echo htmlspecialchars($_SESSION['username']); ?>" /></p>
-        <p><strong>Age:</strong> <input type="number" name="age" value="<?php echo htmlspecialchars($_SESSION['age'] ?? ''); ?>" /></p>
-        <p><strong>Email:</strong> <input type="email" name="email" value="<?php echo htmlspecialchars($_SESSION['email'] ?? ''); ?>" /></p>
-        <p><strong>Phone:</strong> <input type="tel" name="phone" value="<?php echo htmlspecialchars($_SESSION['phone'] ?? ''); ?>" /></p>
-        <p><strong>Country:</strong> <input type="text" name="country" value="<?php echo htmlspecialchars($_SESSION['country'] ?? ''); ?>" /></p>
+        <p><strong>Email:</strong> <input type="email" name="email" value="<?php echo htmlspecialchars($_SESSION['email']); ?>" /></p>
+        <p><strong>Phone:</strong> <input type="tel" name="phone" value="<?php echo htmlspecialchars($_SESSION['phone']); ?>" /></p>
+        <p><strong>Country:</strong> <input type="text" name="country" value="<?php echo htmlspecialchars($_SESSION['country']); ?>" /></p>
 
         <!-- File input for photo upload -->
         <p><strong>Profile Photo:</strong>
@@ -56,6 +55,9 @@ if ($user) {
     </form>
 
     <hr>
+
+    <!-- Display wallet balance -->
+    <p><strong>Wallet Balance:</strong> <?php echo htmlspecialchars(number_format($_SESSION['wallet'], 2)); ?> EGP</p>
 
     <!-- Button to go to Add Wallet page -->
     <form action="add_wallet.php" method="get">
