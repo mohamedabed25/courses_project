@@ -114,6 +114,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Course Content</title>
+    <style>
+        body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+            color: #333;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            position: relative;
+            border: 2px solid #1a73e8;
+        }
+
+        /* Circular decoration - larger and more transparent, on the sides */
+        .container:before, .container:after {
+            content: '';
+            position: absolute;
+            background-color: #1a73e8;
+            width: 300px;  /* Increased size */
+            height: 300px; /* Increased size */
+            border-radius: 50%;
+            opacity: 0.2; /* More transparent */
+        }
+
+        .container:before {
+            top: 5%;
+            left: -5%;
+        }
+
+        .container:after {
+            bottom: 5%;
+            right: -5%;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #155db2;
+        }
+
+        input[type="button"] {
+            background-color: #f1f1f1;
+            color: #333;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="button"]:hover {
+            background-color: #ddd;
+        }
+
+        textarea {
+            height: 150px;
+        }
+    </style>
     <script>
         function changeContentType() {
             var contentType = document.getElementById("content_type").value;
@@ -144,61 +231,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Initialize content type change handler
-        window.onload = changeContentType;
+        // Initialize content type
+        document.addEventListener("DOMContentLoaded", function () {
+            changeContentType(); // Initialize content type display
+        });
     </script>
 </head>
 <body>
-    <h1>Add Content to Course</h1>
+    <h1>Add New Course Content</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="container">
+            <label for="title">Content Title:</label>
+            <input type="text" id="title" name="title" required>
 
-    <form method="POST" action="course_content.php?id=<?php echo $_GET['id']; ?>" enctype="multipart/form-data">
-        <label for="title">Content Title:</label>
-        <input type="text" name="title" required><br><br>
+            <label for="content_type">Content Type:</label>
+            <select id="content_type" name="content_type" onchange="changeContentType()" required>
+                <option value="text">Text</option>
+                <option value="video">Video</option>
+                <option value="pdf">PDF</option>
+                <option value="url">URL</option>
+                <option value="quiz">Quiz</option>
+            </select>
 
-        <label for="content_type">Content Type:</label>
-        <select name="content_type" id="content_type" onchange="changeContentType()" required>
-            <option value="text">Text</option>
-            <option value="video">Video</option>
-            <option value="url">URL</option>
-            <option value="pdf">PDF</option>
-            <option value="quiz">Quiz</option>
-        </select><br><br>
+            <div id="text_area_container" style="display:none;">
+                <label for="editor">Content:</label>
+                <textarea id="editor" name="editor"></textarea>
+            </div>
 
-        <!-- Order input -->
-        <label for="order">Order:</label>
-        <input type="number" name="order" required ><br><br> 
+            <div id="file_input_container" style="display:none;">
+                <label for="pdf_file">Upload PDF:</label>
+                <input type="file" name="pdf_file" accept=".pdf">
+            </div>
 
-        <!-- File input container for PDF -->
-        <div id="file_input_container" style="display:none;">
-            <label for="pdf_file">PDF File:</label>
-            <input type="file" name="pdf_file" id="pdf_file" accept="application/pdf"><br><br>
+            <div id="video_input_container" style="display:none;">
+                <label for="video_file">Upload Video:</label>
+                <input type="file" name="video_file" accept="video/*">
+            </div>
+
+            <div id="url_input_container" style="display:none;">
+                <label for="url">Enter URL:</label>
+                <input type="url" name="url">
+            </div>
+
+            <div id="quiz_input_container" style="display:none;">
+                <label for="quiz_id">Quiz ID:</label>
+                <input type="text" name="quiz_id">
+            </div>
+
+            <label for="order">Order:</label>
+            <input type="number" id="order" name="order" required>
+
+            <input type="submit" value="Add Content">
         </div>
-
-        <!-- Video input container -->
-        <div id="video_input_container" style="display:none;">
-            <label for="video_file">Video File:</label>
-            <input type="file" name="video_file" id="video_file" accept="video/*"><br><br>
-        </div>
-
-        <!-- URL input container -->
-        <div id="url_input_container" style="display:none;">
-            <label for="url">URL:</label>
-            <input type="url" name="url" id="url"><br><br>
-        </div>
-
-        <!-- Text input container -->
-        <div id="text_area_container" style="display:none;">
-            <label for="editor">Content (Text):</label>
-            <textarea id="editor" name="editor" ></textarea><br><br>
-        </div>
-
-        <!-- Quiz ID input container -->
-        <div id="quiz_input_container" style="display:none;">
-            <label for="quiz_id">Quiz ID:</label>
-            <input type="text" name="quiz_id" id="quiz_id"><br><br>
-        </div>
-
-        <input type="submit" value="Add Content">
     </form>
 </body>
 </html>
