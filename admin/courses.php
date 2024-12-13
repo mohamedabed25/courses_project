@@ -12,8 +12,12 @@ if (!isset($_SESSION['admin_id'])) {
 // Include the database connection
 include('../users/connect.php'); // Assuming this file contains your PDO connection
 
-// Fetch courses from the database
-$sql = "SELECT * FROM courses";
+// Fetch courses from the database with related tracks and subtracks
+$sql = "
+    SELECT courses.*, tracks.title AS track_title, sub_tracks.title AS subtrack_title
+    FROM courses
+    LEFT JOIN tracks ON courses.track_id = tracks.id
+    LEFT JOIN sub_tracks ON courses.subtrack_id = sub_tracks.id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -21,15 +25,56 @@ $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Handle delete course
 if (isset($_GET['delete'])) {
     $course_id = $_GET['delete'];
-    $delete_sql = "DELETE FROM courses WHERE id = :course_id";
-    $delete_stmt = $pdo->prepare($delete_sql);
-    $delete_stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
-    if ($delete_stmt->execute()) {
-        echo "Course deleted successfully!";
-        header("Location: courses.php"); // Redirect back to the course list
-        exit;
-    } else {
-        echo "Failed to delete course.";
+
+    try {
+        // Start transaction
+        $pdo->beginTransaction();
+
+        // Fetch track_id and subtrack_id before deleting
+        $fetchSql = "SELECT track_id, subtrack_id FROM courses WHERE id = :course_id";
+        $fetchStmt = $pdo->prepare($fetchSql);
+        $fetchStmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+        $fetchStmt->execute();
+        $courseData = $fetchStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($courseData) {
+            $track_id = $courseData['track_id'];
+            $subtrack_id = $courseData['subtrack_id'];
+
+            // Delete course
+            $delete_sql = "DELETE FROM courses WHERE id = :course_id";
+            $delete_stmt = $pdo->prepare($delete_sql);
+            $delete_stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+
+            if ($delete_stmt->execute()) {
+                // Decrement no_of_courses in the tracks and sub_tracks tables
+                if ($track_id) {
+                    $updateTrack = $pdo->prepare("UPDATE tracks SET no_of_subtracks = no_of_subtracks - 1 WHERE id = :track_id");
+                    $updateTrack->bindParam(':track_id', $track_id, PDO::PARAM_INT);
+                    $updateTrack->execute();
+                }
+
+                if ($subtrack_id) {
+                    $updateSubtrack = $pdo->prepare("UPDATE sub_tracks SET no_of_courses = no_of_courses - 1 WHERE id = :subtrack_id");
+                    $updateSubtrack->bindParam(':subtrack_id', $subtrack_id, PDO::PARAM_INT);
+                    $updateSubtrack->execute();
+                }
+
+                // Commit transaction
+                $pdo->commit();
+
+                echo "Course deleted successfully!";
+                header("Location: courses.php"); // Redirect back to the course list
+                exit;
+            } else {
+                throw new Exception("Failed to delete course.");
+            }
+        } else {
+            throw new Exception("Course not found.");
+        }
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        echo "Error: " . $e->getMessage();
     }
 }
 ?>
@@ -41,10 +86,11 @@ if (isset($_GET['delete'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Courses</title>
     <style>
+        /* Your previous styles */
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e0f7fa, #ffffff); /* خلفية متدرجة */
+            background: linear-gradient(135deg, #e0f7fa, #ffffff);
             color: #333;
             display: flex;
             flex-direction: column;
@@ -55,7 +101,7 @@ if (isset($_GET['delete'])) {
         h1 {
             margin-bottom: 30px;
             text-align: center;
-            color: #1E90FF; /* لون أزرق فاتح */
+            color: #1E90FF;
             font-size: 2.5rem;
         }
 
@@ -77,17 +123,17 @@ if (isset($_GET['delete'])) {
         }
 
         th {
-            background: #0288d1; /* لون أزرق فاتح */
+            background: #0288d1;
             color: #fff;
             font-weight: bold;
         }
 
         tr:nth-child(even) {
-            background: #f9f9f9; /* لون خلفية فاتحة */
+            background: #f9f9f9;
         }
 
         tr:hover {
-            background: #e3f2fd; /* لون خلفية عند التحويم */
+            background: #e3f2fd;
         }
 
         .action-btn {
@@ -96,40 +142,35 @@ if (isset($_GET['delete'])) {
             font-size: 14px;
             font-weight: 600;
             color: #fff;
-            margin: 0 5px 10px 5px; /* المسافة بين الأزرار داخل الجدول */
+            margin: 0 5px 10px 5px;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
         }
 
         .edit-btn {
-            background: #26a69a; /* لون تركواز */
+            background: #26a69a;
         }
 
         .delete-btn {
-            background: #e57373; /* لون أحمر */
+            background: #e57373;
         }
 
         .view-btn {
-            background: #64b5f6; /* لون أزرق سماوي */
+            background: #64b5f6;
         }
 
         .add-btn {
-            background: #81c784; /* لون أخضر */
-        }
-
-        .action-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            background: #81c784;
         }
 
         .add-course {
-            margin-top: 40px; /* زيادة المسافة بين الزر و باقي المحتوى */
+            margin-top: 40px;
             padding: 14px 30px;
             font-size: 18px;
             font-weight: bold;
             color: #fff;
-            background: #1E90FF; /* لون أزرق */
+            background: #1E90FF;
             border-radius: 30px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             text-decoration: none;
@@ -138,41 +179,17 @@ if (isset($_GET['delete'])) {
 
         .add-course:hover {
             transform: scale(1.05);
-            background: #1565c0; /* لون أزرق أغمق */
+            background: #1565c0;
         }
 
         td a {
             display: inline-block;
             margin-right: 10px;
-            margin-bottom: 10px; /* مسافة إضافية أسفل الأزرار */
-        }
-
-        .background-shape {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            background: #0288d1;
-            opacity: 0.2;
-            z-index: -1;
-        }
-
-        .shape-1 {
-            top: -100px;
-            left: -150px;
-        }
-
-        .shape-2 {
-            bottom: -100px;
-            right: -150px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Background Shapes -->
-    <div class="background-shape shape-1"></div>
-    <div class="background-shape shape-2"></div>
-
     <h1>Manage Courses</h1>
 
     <table>
@@ -184,6 +201,8 @@ if (isset($_GET['delete'])) {
                 <th>Age Group (Under 10)</th>
                 <th>Is Free</th>
                 <th>Course Price</th>
+                <th>Track</th>
+                <th>Subtrack</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -196,6 +215,8 @@ if (isset($_GET['delete'])) {
                     <td><?php echo $course['less_than_10'] == 1 ? 'Yes' : 'No'; ?></td>
                     <td><?php echo $course['is_free'] == 1 ? 'Yes' : 'No'; ?></td>
                     <td><?php echo number_format($course['course_price'], 2); ?></td>
+                    <td><?php echo htmlspecialchars($course['track_title'] ?? 'N/A'); ?></td>
+                    <td><?php echo htmlspecialchars($course['subtrack_title'] ?? 'N/A'); ?></td>
                     <td>
                         <a href="edit_course.php?id=<?php echo $course['id']; ?>" class="action-btn edit-btn">Edit</a>
                         <a href="?delete=<?php echo $course['id']; ?>" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this course?');">Delete</a>
