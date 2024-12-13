@@ -3,18 +3,16 @@
 
 // Start session and check if the user is logged in as an admin
 session_start();
-
 if (!isset($_SESSION['admin_id'])) {
     header("Location: admin_login.html"); // Redirect to login if not logged in
     exit;
 }
 
 // Include the database connection
-include('../users/connect.php'); // Assuming this file contains your PDO connection
+include('../users/connect.php');
 
 // Fetch tracks and subtracks for dropdowns
-$tracks = [];
-$subtracks = [];
+$tracks = $subtracks = [];
 try {
     $tracksStmt = $pdo->prepare("SELECT id, title FROM tracks");
     $tracksStmt->execute();
@@ -32,53 +30,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
     $description = $_POST['description'];
     $instructor_name = $_POST['instructor_name'];
-    $less_than_10 = $_POST['less_than_10'];
+    $less_than_10 = isset($_POST['less_than_10']) ? 1 : 0;
     $track_id = $_POST['track_id'];
     $subtrack_id = $_POST['subtrack_id'];
+    $photo = null;
+
+    // Handle file upload
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        $photo = 'uploads/' . basename($_FILES['photo']['name']);
+        move_uploaded_file($_FILES['photo']['tmp_name'], $photo);
+    }
 
     // Validate input
-    if (empty($title) || empty($description) || empty($instructor_name) || !isset($less_than_10) || empty($track_id) || empty($subtrack_id)) {
-        echo "All fields are required.";
-    } else {
+    if ($title && $description && $instructor_name && $track_id && $subtrack_id) {
         try {
-            // Start transaction
-            $pdo->beginTransaction();
-
             // Insert course into the database
-            $sql = "INSERT INTO courses (title, description, instructor_name, less_than_10, track_id, subtrack_id, created_at, updated_at) 
-                    VALUES (:title, :description, :instructor_name, :less_than_10, :track_id, :subtrack_id, NOW(), NOW())";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':title', $title);
-            $stmt->bindParam(':description', $description);
-            $stmt->bindParam(':instructor_name', $instructor_name);
-            $stmt->bindParam(':less_than_10', $less_than_10, PDO::PARAM_INT);
-            $stmt->bindParam(':track_id', $track_id, PDO::PARAM_INT);
-            $stmt->bindParam(':subtrack_id', $subtrack_id, PDO::PARAM_INT);
-
-            if ($stmt->execute()) {
-                // Increment no_of_courses in the tracks and sub_tracks tables
-                $updateTrack = $pdo->prepare("UPDATE tracks SET no_of_subtracks = no_of_subtracks + 1 WHERE id = :track_id");
-                $updateTrack->bindParam(':track_id', $track_id, PDO::PARAM_INT);
-                $updateTrack->execute();
-
-                $updateSubtrack = $pdo->prepare("UPDATE sub_tracks SET no_of_courses = no_of_courses + 1 WHERE id = :subtrack_id");
-                $updateSubtrack->bindParam(':subtrack_id', $subtrack_id, PDO::PARAM_INT);
-                $updateSubtrack->execute();
-
-                // Commit transaction
-                $pdo->commit();
-
-                // Redirect to courses.php after successful insertion
-                header("Location: courses.php");
-                exit;
-            } else {
-                throw new Exception("Failed to add course.");
-            }
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            echo "Transaction failed: " . $e->getMessage();
+            $stmt = $pdo->prepare("INSERT INTO courses (title, description, instructor_name, less_than_10, track_id, subtrack_id, photo, created_at, updated_at) 
+                                    VALUES (:title, :description, :instructor_name, :less_than_10, :track_id, :subtrack_id, :photo, NOW(), NOW())");
+            $stmt->execute([
+                ':title' => $title,
+                ':description' => $description,
+                ':instructor_name' => $instructor_name,
+                ':less_than_10' => $less_than_10,
+                ':track_id' => $track_id,
+                ':subtrack_id' => $subtrack_id,
+                ':photo' => $photo,
+            ]);
+            echo "Course added successfully!";
+        } catch (PDOException $e) {
+            echo "Error adding course: " . $e->getMessage();
         }
+    } else {
+        echo "All fields are required.";
     }
+    header("Location: courses.php");
+    exit;
 }
 ?>
 
@@ -88,51 +74,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Course</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px;
+        }
+        input[type="submit"] {
+            width: auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Add New Course</h1>
-    
-    <form method="POST" action="add_course.php">
-        <label for="title">Course Title:</label>
-        <input type="text" name="title" required><br><br>
 
-        <label for="description">Course Description:</label>
-        <textarea name="description" required></textarea><br><br>
+<h2>Add New Course</h2>
+<form action="  add_course.php" method="POST" enctype="multipart/form-data">
+    <label for="title">Course Title:</label>
+    <input type="text" name="title" required><br>
 
-        <label for="instructor_name">Instructor Name:</label>
-        <input type="text" name="instructor_name" required><br><br>
+    <label for="description">Description:</label>
+    <textarea name="description" required></textarea><br>
 
-        <!-- Dropdown for Less Than 10 Age -->
-        <label for="less_than_10">Is the course intended for users under the age of 10?</label>
-        <select name="less_than_10" required>
-            <option value="0">No</option>
-            <option value="1">Yes</option>
-        </select><br><br>
+    <label for="instructor_name">Instructor Name:</label>
+    <input type="text" name="instructor_name" required><br>
 
-        <!-- Dropdown for Tracks -->
-        <label for="track_id">Select Track:</label>
-        <select name="track_id" required>
-            <option value="">-- Select Track --</option>
-            <?php foreach ($tracks as $track): ?>
-                <option value="<?php echo $track['id']; ?>">
-                    <?php echo htmlspecialchars($track['title']); ?>
-                </option>
-            <?php endforeach; ?>
-        </select><br><br>
+    <label for="less_than_10">Less Than 10 Seats:</label>
+    <input type="checkbox" name="less_than_10" value="1"><br>
 
-        <!-- Dropdown for Subtracks -->
-        <label for="subtrack_id">Select Subtrack:</label>
-        <select name="subtrack_id" required>
-            <option value="">-- Select Subtrack --</option>
-            <?php foreach ($subtracks as $subtrack): ?>
-                <option value="<?php echo $subtrack['id']; ?>">
-                    <?php echo htmlspecialchars($subtrack['title']); ?>
-                </option>
-            <?php endforeach; ?>
-        </select><br><br>
+    <label for="track_id">Track:</label>
+    <select name="track_id" required>
+        <?php foreach ($tracks as $track): ?>
+            <option value="<?php echo $track['id']; ?>"><?php echo htmlspecialchars($track['title']); ?></option>
+        <?php endforeach; ?>
+    </select><br>
 
-        <input type="submit" value="Add Course">
-    </form>
+    <label for="subtrack_id">Sub-Track:</label>
+    <select name="subtrack_id" required>
+        <?php foreach ($subtracks as $subtrack): ?>
+            <option value="<?php echo $subtrack['id']; ?>"><?php echo htmlspecialchars($subtrack['title']); ?></option>
+        <?php endforeach; ?>
+    </select><br>
+
+    <label for="photo">Course Photo:</label>
+    <input type="file" name="photo" accept="image/*"><br>
+
+    <input type="submit" value="Add Course">
+</form>
 
 </body>
 </html>
