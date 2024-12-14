@@ -79,7 +79,7 @@ if (isset($_GET['course_id']) && ctype_digit($_GET['course_id'])) {
     <p><strong>Instructor:</strong> <?php echo htmlspecialchars($course['instructor_name']); ?></p>
     <p><strong>Description:</strong> <?php echo nl2br(htmlspecialchars($course['description'])); ?></p>
     <p><strong>Price:</strong> <?php echo $course['is_free'] ? 'Free' : '$' . htmlspecialchars($course['course_price']); ?></p>
-    <img src="<?php echo htmlspecialchars($course['photo']); ?>" alt="Course Image" style="max-width: 100%; height: auto; margin-top: 10px;">
+    <img src="../../admin/<?php echo htmlspecialchars($course['photo']); ?>" alt="Course Image" width="200">
 
     <h2>Course Contents</h2>
     <?php foreach ($course_contents as $content): ?>

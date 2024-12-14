@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {   # check if the request method is P
             // Regenerate session ID to prevent session fixation attacks
             session_regenerate_id(true);
 
-            header("Location: profile.php"); // Redirect to profile page
+            header("Location: saetion_home/normal.php"); // Redirect to profile page
             exit;
         } else {
             echo "Invalid email or password. Please try again.";

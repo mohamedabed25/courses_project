@@ -1,4 +1,14 @@
 <?php
+// Start session to use session variables
+session_start();
+
+// Check if the user is logged in by verifying a session variable
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to the login page if the user is not logged in
+    header("Location: ../login.html");
+    exit();
+}
+
 // Include the database connection file
 require_once '../connect.php';
 
